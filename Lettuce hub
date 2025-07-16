@@ -1,0 +1,770 @@
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+---------------------------------------------------
+-- LETTUCE HUB ABAIXO
+---------------------------------------------------
+
+local function randomName(len)
+    local t = {}
+    for i = 1, len do
+        t[i] = string.char(math.random(97, 122))
+    end
+    return table.concat(t)
+end
+
+local guiName = randomName(10)
+local mainFrameName = randomName(12)
+
+if LocalPlayer.PlayerGui:FindFirstChild(guiName) then
+    return
+end
+
+local function createButton(text, pos, parent, callback)
+    local btn = Instance.new("TextButton")
+    btn.Name = randomName(9)
+    btn.Size = UDim2.new(0, 180, 0, 38)
+    btn.Position = UDim2.new(0, pos.X, 0, pos.Y)
+    btn.BackgroundColor3 = Color3.fromRGB(20, 40, 90)
+    btn.TextColor3 = Color3.fromRGB(200, 220, 255)
+    btn.Font = Enum.Font.GothamBold
+    btn.TextSize = 18
+    btn.Text = text
+    btn.Parent = parent
+    btn.AutoButtonColor = true
+
+    local uicorner = Instance.new("UICorner")
+    uicorner.CornerRadius = UDim.new(0, 14)
+    uicorner.Parent = btn
+
+    btn.MouseButton1Click:Connect(callback)
+    return btn
+end
+
+local function getHumanoid()
+    local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+    return char:FindFirstChildWhichIsA("Humanoid"), char
+end
+
+local gui = Instance.new("ScreenGui")
+gui.Name = guiName
+gui.ResetOnSpawn = false
+gui.Parent = game:GetService("CoreGui")
+
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = mainFrameName
+mainFrame.Size = UDim2.new(0, 220, 0, 600)
+mainFrame.Position = UDim2.new(0, 25, 0, 120)
+mainFrame.BackgroundColor3 = Color3.fromRGB(8, 12, 20)
+mainFrame.BorderSizePixel = 0
+mainFrame.Active = true
+mainFrame.Draggable = true
+mainFrame.Visible = true
+mainFrame.Parent = gui
+
+local mainCorner = Instance.new("UICorner")
+mainCorner.CornerRadius = UDim.new(0, 22)
+mainCorner.Parent = mainFrame
+
+-- TAB SYSTEM
+local tabFrame = Instance.new("Frame")
+tabFrame.Size = UDim2.new(1, 0, 0, 36)
+tabFrame.Position = UDim2.new(0, 0, 0, 38)
+tabFrame.BackgroundColor3 = Color3.fromRGB(10, 22, 45)
+tabFrame.BorderSizePixel = 0
+tabFrame.Parent = mainFrame
+
+local tabCorner = Instance.new("UICorner")
+tabCorner.CornerRadius = UDim.new(0, 18)
+tabCorner.Parent = tabFrame
+
+local function createTab(name, posX, parent, callback)
+    local tab = Instance.new("TextButton")
+    tab.Name = name
+    tab.Size = UDim2.new(0, 102, 1, 0)
+    tab.Position = UDim2.new(0, posX, 0, 0)
+    tab.BackgroundColor3 = Color3.fromRGB(20, 40, 90)
+    tab.TextColor3 = Color3.fromRGB(160, 200, 255)
+    tab.Font = Enum.Font.GothamBold
+    tab.TextSize = 16
+    tab.Text = name
+    tab.Parent = parent
+
+    local uicorner = Instance.new("UICorner")
+    uicorner.CornerRadius = UDim.new(0, 12)
+    uicorner.Parent = tab
+
+    tab.MouseButton1Click:Connect(callback)
+    return tab
+end
+
+local contentFrames = {}
+
+local function showTab(tabName)
+    for name, frame in pairs(contentFrames) do
+        frame.Visible = (name == tabName)
+    end
+end
+
+-- MAIN TAB
+local mainContentFrame = Instance.new("Frame")
+mainContentFrame.Size = UDim2.new(1, 0, 1, -74)
+mainContentFrame.Position = UDim2.new(0, 0, 0, 74)
+mainContentFrame.BackgroundTransparency = 1
+mainContentFrame.Visible = true
+mainContentFrame.Parent = mainFrame
+contentFrames["Principal"] = mainContentFrame
+
+-- 2 TAB
+local twoContentFrame = Instance.new("Frame")
+twoContentFrame.Size = UDim2.new(1, 0, 1, -74)
+twoContentFrame.Position = UDim2.new(0, 0, 0, 74)
+twoContentFrame.BackgroundTransparency = 1
+twoContentFrame.Visible = false
+twoContentFrame.Parent = mainFrame
+contentFrames["2"] = twoContentFrame
+
+-- TABS BUTTONS
+createTab("Principal", 8, tabFrame, function() showTab("Principal") end)
+createTab("2", 116, tabFrame, function() showTab("2") end)
+
+showTab("Principal")
+
+-- RESTANTE DOS ELEMENTOS DO GUI (minimize/title)
+local titleBar = Instance.new("Frame")
+titleBar.Size = UDim2.new(1, 0, 0, 38)
+titleBar.BackgroundColor3 = Color3.fromRGB(10, 22, 45)
+titleBar.BorderSizePixel = 0
+titleBar.Parent = mainFrame
+
+local titleCorner = Instance.new("UICorner")
+titleCorner.CornerRadius = UDim.new(0, 18)
+titleCorner.Parent = titleBar
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, -38, 1, 0)
+title.Position = UDim2.new(0, 10, 0, 0)
+title.BackgroundTransparency = 1
+title.Text = "Lettuce HUB"
+title.TextColor3 = Color3.fromRGB(90, 170, 255)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 19
+title.TextXAlignment = Enum.TextXAlignment.Center
+title.Parent = titleBar
+
+local minimizeBtn = Instance.new("TextButton")
+minimizeBtn.Size = UDim2.new(0, 38, 1, 0)
+minimizeBtn.Position = UDim2.new(1, -38, 0, 0)
+minimizeBtn.BackgroundColor3 = Color3.fromRGB(18, 32, 60)
+minimizeBtn.TextColor3 = Color3.fromRGB(90, 170, 255)
+minimizeBtn.Text = "▶"
+minimizeBtn.Font = Enum.Font.GothamBold
+minimizeBtn.TextSize = 22
+minimizeBtn.Parent = titleBar
+
+local minCorner = Instance.new("UICorner")
+minCorner.CornerRadius = UDim.new(0, 18)
+minCorner.Parent = minimizeBtn
+
+local minimized = false
+local function updateMinimize()
+    if minimized then
+        for _, frame in pairs(contentFrames) do frame.Visible = false end
+        tabFrame.Visible = false
+        mainFrame.Size = UDim2.new(0, 220, 0, 38)
+        minimizeBtn.Text = "▼"
+    else
+        showTab("Principal")
+        tabFrame.Visible = true
+        mainFrame.Size = UDim2.new(0, 220, 0, 600)
+        minimizeBtn.Text = "▶"
+    end
+end
+
+minimizeBtn.MouseButton1Click:Connect(function()
+    minimized = not minimized
+    updateMinimize()
+end)
+updateMinimize()
+
+task.spawn(function()
+    repeat task.wait() until LocalPlayer:FindFirstChild("PlayerGui")
+    gui.Parent = LocalPlayer.PlayerGui
+    mainFrame.Visible = true
+end)
+
+---------------------------------------------------
+-- MiniHub Movível e Minimizável + Fechar ("x")
+---------------------------------------------------
+local function openMovableMinimizableMiniHub(btnText, getStateFunc, toggleFunc)
+    local singleHub = Instance.new("ScreenGui")
+    singleHub.Name = "MiniHub_" .. btnText .. tostring(math.random(100000,999999))
+    singleHub.Parent = game:GetService("CoreGui")
+
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(0, 220, 0, 68)
+    frame.Position = UDim2.new(0.5, -110, 0.3, 0)
+    frame.BackgroundColor3 = Color3.fromRGB(25, 25, 60)
+    frame.BorderSizePixel = 0
+    frame.Active = true
+    frame.Draggable = true
+    frame.Parent = singleHub
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 18)
+    corner.Parent = frame
+
+    local titleBar = Instance.new("Frame")
+    titleBar.Size = UDim2.new(1, 0, 0, 28)
+    titleBar.Position = UDim2.new(0,0,0,0)
+    titleBar.BackgroundColor3 = Color3.fromRGB(35, 35, 85)
+    titleBar.Parent = frame
+    titleBar.Active = true
+
+    local titleTxt = Instance.new("TextLabel")
+    titleTxt.Size = UDim2.new(1, -64, 1, 0)
+    titleTxt.Position = UDim2.new(0, 8, 0, 0)
+    titleTxt.BackgroundTransparency = 1
+    titleTxt.Text = btnText .. " MiniHub"
+    titleTxt.TextColor3 = Color3.fromRGB(120, 210, 255)
+    titleTxt.Font = Enum.Font.GothamBold
+    titleTxt.TextSize = 19
+    titleTxt.Parent = titleBar
+
+    local minimizeBtn = Instance.new("TextButton")
+    minimizeBtn.Size = UDim2.new(0, 28, 1, 0)
+    minimizeBtn.Position = UDim2.new(1, -56, 0, 0)
+    minimizeBtn.BackgroundColor3 = Color3.fromRGB(18, 32, 60)
+    minimizeBtn.TextColor3 = Color3.fromRGB(120, 210, 255)
+    minimizeBtn.Text = "_"
+    minimizeBtn.Font = Enum.Font.GothamBold
+    minimizeBtn.TextSize = 20
+    minimizeBtn.Parent = titleBar
+
+    local minCorner2 = Instance.new("UICorner")
+    minCorner2.CornerRadius = UDim.new(0, 18)
+    minCorner2.Parent = minimizeBtn
+
+    local closeBtn = Instance.new("TextButton")
+    closeBtn.Size = UDim2.new(0, 28, 1, 0)
+    closeBtn.Position = UDim2.new(1, -28, 0, 0)
+    closeBtn.BackgroundColor3 = Color3.fromRGB(100, 20, 30)
+    closeBtn.TextColor3 = Color3.fromRGB(255, 140, 140)
+    closeBtn.Text = "X"
+    closeBtn.Font = Enum.Font.GothamBold
+    closeBtn.TextSize = 20
+    closeBtn.Parent = titleBar
+    local closeCorner = Instance.new("UICorner")
+    closeCorner.CornerRadius = UDim.new(0, 18)
+    closeCorner.Parent = closeBtn
+
+    local mainBtn = Instance.new("TextButton")
+    mainBtn.Size = UDim2.new(0.8, 0, 0, 32)
+    mainBtn.Position = UDim2.new(0.1, 0, 0, 34)
+    mainBtn.BackgroundColor3 = Color3.fromRGB(50, 120, 255)
+    mainBtn.TextColor3 = Color3.fromRGB(230, 230, 255)
+    mainBtn.Font = Enum.Font.GothamBold
+    mainBtn.TextSize = 18
+    mainBtn.Parent = frame
+
+    local btnCorner = Instance.new("UICorner")
+    btnCorner.CornerRadius = UDim.new(0, 12)
+    btnCorner.Parent = mainBtn
+
+    local function updateBtnText()
+        if getStateFunc() then
+            mainBtn.Text = btnText .. " [ON]"
+            mainBtn.BackgroundColor3 = Color3.fromRGB(50, 200, 90)
+        else
+            mainBtn.Text = btnText .. " [OFF]"
+            mainBtn.BackgroundColor3 = Color3.fromRGB(50, 120, 255)
+        end
+    end
+    updateBtnText()
+
+    mainBtn.MouseButton1Click:Connect(function()
+        toggleFunc()
+        updateBtnText()
+    end)
+
+    local minimized = false
+    minimizeBtn.MouseButton1Click:Connect(function()
+        minimized = not minimized
+        if minimized then
+            mainBtn.Visible = false
+            frame.Size = UDim2.new(0, 220, 0, 28)
+            minimizeBtn.Text = "▣"
+        else
+            mainBtn.Visible = true
+            frame.Size = UDim2.new(0, 220, 0, 68)
+            minimizeBtn.Text = "_"
+        end
+    end)
+
+    closeBtn.MouseButton1Click:Connect(function()
+        singleHub:Destroy()
+    end)
+end
+
+---------------------------------------------------
+-- BOTÕES PRINCIPAL
+---------------------------------------------------
+
+local superSpeedEnabled = false
+local superSpeedBtn = nil
+local superSpeedConn = nil
+local SPEED_AMOUNT = 0.3
+
+local infiniteJumpEnabled = false
+local infiniteJumpConn = nil
+local infiniteJumpBtn
+
+local flyEnabled = false
+local flyBtn
+local flyConn
+local flyBodyVel = nil
+
+local noclipEnabled = false
+local noclipBtn
+local noclipConn
+
+local godmodeEnabled = false
+local godmodeConn, godmodeStateConn, godmodeDeathConn, godmodeVoidLoop
+local godmodeBtn
+
+local savedSpot = nil
+local saveSpotBtn, gotoSpotBtn
+
+local flingEnabled = false
+local flingBtn
+local flingConn
+
+local antiFlingEnabled = false
+local antiFlingBtn
+local antiFlingConn
+
+local function setSuperSpeed(state)
+    superSpeedEnabled = state
+    if superSpeedConn then superSpeedConn:Disconnect(); superSpeedConn = nil end
+    if superSpeedEnabled then
+        superSpeedBtn.Text = "Super Velocidade [ON]"
+        superSpeedBtn.BackgroundColor3 = Color3.fromRGB(50, 120, 255)
+        superSpeedConn = game:GetService("RunService").RenderStepped:Connect(function(dt)
+            local humanoid, char = getHumanoid()
+            local hrp = char and char:FindFirstChild("HumanoidRootPart")
+            if humanoid and hrp then
+                local UIS = game:GetService("UserInputService")
+                local cam = workspace.CurrentCamera
+                local move = Vector3.new()
+                if UIS:IsKeyDown(Enum.KeyCode.W) then move = move + cam.CFrame.LookVector end
+                if UIS:IsKeyDown(Enum.KeyCode.S) then move = move - cam.CFrame.LookVector end
+                if UIS:IsKeyDown(Enum.KeyCode.D) then move = move + cam.CFrame.RightVector end
+                if UIS:IsKeyDown(Enum.KeyCode.A) then move = move - cam.CFrame.RightVector end
+                if move.Magnitude > 0 then
+                    hrp.CFrame = hrp.CFrame + move.Unit * SPEED_AMOUNT
+                end
+            end
+        end)
+    else
+        superSpeedBtn.Text = "Super Velocidade [OFF]"
+        superSpeedBtn.BackgroundColor3 = Color3.fromRGB(20, 40, 90)
+    end
+end
+
+local function updateInfiniteJumpBtn()
+    if infiniteJumpEnabled then
+        infiniteJumpBtn.Text = "Pulo Infinito [ON]"
+        infiniteJumpBtn.BackgroundColor3 = Color3.fromRGB(50, 120, 255)
+    else
+        infiniteJumpBtn.Text = "Pulo Infinito [OFF]"
+        infiniteJumpBtn.BackgroundColor3 = Color3.fromRGB(20, 40, 90)
+    end
+end
+
+local function setInfiniteJump(state)
+    infiniteJumpEnabled = state
+    if infiniteJumpConn then infiniteJumpConn:Disconnect(); infiniteJumpConn = nil end
+    if state then
+        infiniteJumpConn = game:GetService("UserInputService").JumpRequest:Connect(function()
+            local humanoid = getHumanoid()
+            if humanoid then
+                pcall(function()
+                    humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+                end)
+            end
+        end)
+    end
+    updateInfiniteJumpBtn()
+end
+
+-- Noclip
+local function setNoclip(state)
+    noclipEnabled = state
+    if noclipConn then noclipConn:Disconnect(); noclipConn = nil end
+    if noclipEnabled then
+        noclipBtn.Text = "Noclip [ON]"
+        noclipBtn.BackgroundColor3 = Color3.fromRGB(90, 255, 90)
+        noclipConn = game:GetService("RunService").Stepped:Connect(function()
+            local humanoid, char = getHumanoid()
+            if char then
+                for _, part in ipairs(char:GetChildren()) do
+                    if part:IsA("BasePart") and part.CanCollide then
+                        part.CanCollide = false
+                    end
+                end
+            end
+        end)
+    else
+        noclipBtn.Text = "Noclip [OFF]"
+        noclipBtn.BackgroundColor3 = Color3.fromRGB(20, 40, 90)
+        local _, char = getHumanoid()
+        if char then
+            for _, part in ipairs(char:GetChildren()) do
+                if part:IsA("BasePart") then
+                    part.CanCollide = true
+                end
+            end
+        end
+    end
+end
+
+noclipBtn = createButton("Noclip", Vector2.new(20, 310), mainContentFrame, function()
+    setNoclip(not noclipEnabled)
+end)
+
+flyBtn = createButton("Fly", Vector2.new(20, 110), mainContentFrame, function()
+    openMovableMinimizableMiniHub("Fly",
+        function() return flyEnabled end,
+        function()
+            if not flyEnabled then
+                local RS = game:GetService("RunService")
+                local UIS = game:GetService("UserInputService")
+                local speed = 50
+                flyEnabled = true
+                flyConn = RS.RenderStepped:Connect(function(dt)
+                    local humanoid, char = getHumanoid()
+                    local hrp = char and char:FindFirstChild("HumanoidRootPart")
+                    if not flyEnabled or not hrp then return end
+                    if not flyBodyVel or not flyBodyVel.Parent then
+                        flyBodyVel = Instance.new("BodyVelocity")
+                        flyBodyVel.Name = "LettuceFly"
+                        flyBodyVel.Parent = hrp
+                        flyBodyVel.MaxForce = Vector3.new(1e5, 1e5, 1e5)
+                        flyBodyVel.P = 1250
+                        flyBodyVel.Velocity = Vector3.new(0,0,0)
+                    end
+                    local cam = workspace.CurrentCamera
+                    local move = Vector3.new()
+                    if UIS:IsKeyDown(Enum.KeyCode.W) then move = move + cam.CFrame.LookVector end
+                    if UIS:IsKeyDown(Enum.KeyCode.S) then move = move - cam.CFrame.LookVector end
+                    if UIS:IsKeyDown(Enum.KeyCode.D) then move = move + cam.CFrame.RightVector end
+                    if UIS:IsKeyDown(Enum.KeyCode.A) then move = move - cam.CFrame.RightVector end
+                    if UIS:IsKeyDown(Enum.KeyCode.Space) then move = move + Vector3.new(0,1,0) end
+                    if UIS:IsKeyDown(Enum.KeyCode.LeftControl) then move = move - Vector3.new(0,1,0) end
+
+                    if move.Magnitude > 0 then
+                        flyBodyVel.Velocity = move.Unit * speed
+                    else
+                        flyBodyVel.Velocity = Vector3.new(0, 0.1, 0)
+                    end
+                end)
+            else
+                flyEnabled = false
+                if flyConn then flyConn:Disconnect(); flyConn = nil end
+                if flyBodyVel then flyBodyVel:Destroy(); flyBodyVel = nil end
+            end
+        end
+    )
+end)
+
+gotoSpotBtn = createButton("Voar pro Spot", Vector2.new(20, 260), mainContentFrame, function()
+    openMovableMinimizableMiniHub("Voar pro Spot",
+        function() return false end,
+        function()
+            if not savedSpot then return end
+            local _, char = getHumanoid()
+            local hrp = char and char:FindFirstChild("HumanoidRootPart")
+            if not hrp then return end
+
+            local arrived = false
+            local flySpeed = 100
+            local RS = game:GetService("RunService")
+            local conn
+            conn = RS.RenderStepped:Connect(function(dt)
+                if not hrp or not savedSpot then arrived = true return end
+                local pos = hrp.Position
+                local dest = savedSpot.Position
+                local dir = (dest - pos)
+                local dist = dir.Magnitude
+                if dist < 3 then
+                    arrived = true
+                else
+                    local step = math.min(dist, flySpeed * dt)
+                    hrp.Velocity = Vector3.new()
+                    hrp.CFrame = hrp.CFrame + dir.Unit * step
+                end
+            end)
+            while not arrived do task.wait() end
+            if conn then conn:Disconnect() end
+        end
+    )
+end)
+
+superSpeedBtn = createButton("Super Velocidade [OFF]", Vector2.new(20, 10), mainContentFrame, function()
+    setSuperSpeed(not superSpeedEnabled)
+end)
+
+infiniteJumpBtn = createButton("Pulo Infinito [OFF]", Vector2.new(20, 60), mainContentFrame, function()
+    setInfiniteJump(not infiniteJumpEnabled)
+end)
+updateInfiniteJumpBtn()
+
+godmodeBtn = createButton("God Mode", Vector2.new(20, 160), mainContentFrame, function()
+    godmodeEnabled = not godmodeEnabled
+    if godmodeEnabled then
+        godmodeBtn.BackgroundColor3 = Color3.fromRGB(50, 200, 90)
+        activateGodmode()
+    else
+        godmodeBtn.BackgroundColor3 = Color3.fromRGB(20, 40, 90)
+        deactivateGodmode()
+    end
+end)
+
+saveSpotBtn = createButton("Salvar Spot", Vector2.new(20, 210), mainContentFrame, function()
+    local _, char = getHumanoid()
+    local hrp = char and char:FindFirstChild("HumanoidRootPart")
+    if hrp then
+        savedSpot = hrp.CFrame
+        saveSpotBtn.Text = "Spot Salvo!"
+        saveSpotBtn.BackgroundColor3 = Color3.fromRGB(50, 200, 90)
+        task.wait(1)
+        saveSpotBtn.Text = "Salvar Spot"
+        saveSpotBtn.BackgroundColor3 = Color3.fromRGB(20, 40, 90)
+    end
+end)
+
+flingBtn = createButton("Fling [OFF]", Vector2.new(20, 360), mainContentFrame, function()
+    flingEnabled = not flingEnabled
+    if flingEnabled then
+        flingBtn.Text = "Fling [ON]"
+        flingBtn.BackgroundColor3 = Color3.fromRGB(255,80,80)
+        if flingConn then flingConn:Disconnect() end
+        flingConn = game:GetService("RunService").Stepped:Connect(function()
+            local _, myChar = getHumanoid()
+            local myHRP = myChar and myChar:FindFirstChild("HumanoidRootPart")
+            if not myHRP then return end
+            for _, plr in ipairs(Players:GetPlayers()) do
+                if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+                    local otherHRP = plr.Character.HumanoidRootPart
+                    if (myHRP.Position - otherHRP.Position).Magnitude < 4 then
+                        -- FLING A OUTRA PESSOA!
+                        local flingDirection = (otherHRP.Position - myHRP.Position).Unit
+                        if flingDirection.Magnitude == 0 then flingDirection = Vector3.new(0,1,0) end
+                        otherHRP.Velocity = flingDirection * 3000 + Vector3.new(0, 1500, 0)
+                        if otherHRP.Parent:FindFirstChildWhichIsA("Humanoid") then
+                            otherHRP.Parent:FindFirstChildWhichIsA("Humanoid").PlatformStand = true
+                        end
+                    end
+                end
+            end
+        end)
+    else
+        flingBtn.Text = "Fling [OFF]"
+        flingBtn.BackgroundColor3 = Color3.fromRGB(20, 40, 90)
+        if flingConn then flingConn:Disconnect(); flingConn = nil end
+        for _, plr in ipairs(Players:GetPlayers()) do
+            if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+                local otherHRP = plr.Character.HumanoidRootPart
+                if otherHRP.Parent:FindFirstChildWhichIsA("Humanoid") then
+                    otherHRP.Parent:FindFirstChildWhichIsA("Humanoid").PlatformStand = false
+                end
+            end
+        end
+    end
+end)
+
+antiFlingBtn = createButton("Anti Fling [OFF]", Vector2.new(20, 410), mainContentFrame, function()
+    antiFlingEnabled = not antiFlingEnabled
+    if antiFlingEnabled then
+        antiFlingBtn.Text = "Anti Fling [ON]"
+        antiFlingBtn.BackgroundColor3 = Color3.fromRGB(80,255,80)
+        if antiFlingConn then antiFlingConn:Disconnect() end
+        antiFlingConn = game:GetService("RunService").Stepped:Connect(function()
+            local _, char = getHumanoid()
+            if char then
+                local hrp = char:FindFirstChild("HumanoidRootPart")
+                if hrp then
+                    hrp.Velocity = Vector3.new(0,0,0)
+                    hrp.RotVelocity = Vector3.new(0,0,0)
+                end
+                local hum = char:FindFirstChildWhichIsA("Humanoid")
+                if hum then hum.PlatformStand = false end
+            end
+        end)
+    else
+        antiFlingBtn.Text = "Anti Fling [OFF]"
+        antiFlingBtn.BackgroundColor3 = Color3.fromRGB(20, 40, 90)
+        if antiFlingConn then antiFlingConn:Disconnect(); antiFlingConn = nil end
+    end
+end)
+
+---------------------------------------------------
+-- GOD MODE + ANTI VOID
+---------------------------------------------------
+local function activateGodmode()
+    local function protectHumanoid()
+        local humanoid, char = getHumanoid()
+        if not humanoid or not char then return end
+
+        if godmodeConn then godmodeConn:Disconnect() end
+        if godmodeStateConn then godmodeStateConn:Disconnect() end
+        if godmodeDeathConn then godmodeDeathConn:Disconnect() end
+        if godmodeVoidLoop then godmodeVoidLoop:Disconnect() end
+
+        godmodeConn = humanoid:GetPropertyChangedSignal("Health"):Connect(function()
+            if godmodeEnabled and humanoid.Health > 0 and humanoid.Health < humanoid.MaxHealth then
+                humanoid.Health = humanoid.MaxHealth
+            end
+        end)
+
+        godmodeStateConn = humanoid.StateChanged:Connect(function(_, new)
+            if godmodeEnabled and humanoid.Health > 0 then
+                if new == Enum.HumanoidStateType.Dead or new == Enum.HumanoidStateType.FallingDown then
+                    humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
+                end
+            end
+        end)
+
+        godmodeDeathConn = humanoid.Died:Connect(function()
+            if godmodeEnabled then
+                local root = char and char:FindFirstChild("HumanoidRootPart")
+                if root and humanoid.Health > 0 then
+                    task.wait()
+                    humanoid.Health = humanoid.MaxHealth
+                    humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
+                end
+            end
+        end)
+
+        godmodeVoidLoop = game:GetService("RunService").Heartbeat:Connect(function()
+            if godmodeEnabled and char and char:FindFirstChild("HumanoidRootPart") then
+                local hrp = char.HumanoidRootPart
+                if hrp.Position.Y < -50 then
+                    hrp.CFrame = CFrame.new(hrp.Position.X, 10, hrp.Position.Z)
+                    if humanoid.Health < humanoid.MaxHealth then
+                        humanoid.Health = humanoid.MaxHealth
+                    end
+                    humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
+                end
+            end
+        end)
+    end
+
+    protectHumanoid()
+    LocalPlayer.CharacterAdded:Connect(function()
+        task.wait(0.2)
+        if godmodeEnabled then protectHumanoid() end
+    end)
+end
+
+local function deactivateGodmode()
+    if godmodeConn then godmodeConn:Disconnect(); godmodeConn = nil end
+    if godmodeStateConn then godmodeStateConn:Disconnect(); godmodeStateConn = nil end
+    if godmodeDeathConn then godmodeDeathConn:Disconnect(); godmodeDeathConn = nil end
+    if godmodeVoidLoop then godmodeVoidLoop:Disconnect(); godmodeVoidLoop = nil end
+end
+
+---------------------------------------------------
+-- BOTÕES DA ABA "2"
+---------------------------------------------------
+
+local arbixHubBtn = createButton("Arbix hub", Vector2.new(20, 10), twoContentFrame, function()
+    spawn(function()
+        pcall(function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/Youifpg/Steal-a-Brianrot/refs/heads/main/Slowversion.lua"))()
+        end)
+    end)
+end)
+
+-- ESP BUTTON (Tab "2")
+local espEnabled = false
+local espConn = nil
+local function updateESP(state)
+    espEnabled = state
+    espBtn.Text = espEnabled and "ESP [ON]" or "ESP [OFF]"
+    espBtn.BackgroundColor3 = espEnabled and Color3.fromRGB(50, 200, 90) or Color3.fromRGB(20, 40, 90)
+    if espConn then espConn:Disconnect(); espConn = nil end
+
+    -- Remove all previous ESP boxes
+    for _, plr in ipairs(Players:GetPlayers()) do
+        if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+            for _, obj in ipairs(plr.Character.HumanoidRootPart:GetChildren()) do
+                if obj:IsA("BoxHandleAdornment") and obj.Name == "LettuceESP" then
+                    obj:Destroy()
+                end
+            end
+        end
+    end
+
+    if espEnabled then
+        local function addBox(plr)
+            if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+                local hrp = plr.Character.HumanoidRootPart
+                local box = Instance.new("BoxHandleAdornment")
+                box.Name = "LettuceESP"
+                box.Adornee = hrp
+                box.Size = Vector3.new(3, 6, 3)
+                box.Color3 = plr == LocalPlayer and Color3.fromRGB(255, 90, 90) or Color3.fromRGB(90, 255, 90)
+                box.Transparency = 0.5
+                box.AlwaysOnTop = true
+                box.ZIndex = 10
+                box.Parent = hrp
+            end
+        end
+        for _, plr in ipairs(Players:GetPlayers()) do
+            addBox(plr)
+        end
+        espConn = Players.PlayerAdded:Connect(function(plr)
+            plr.CharacterAdded:Connect(function(char)
+                task.wait(1)
+                if espEnabled then
+                    addBox(plr)
+                end
+            end)
+        end)
+        LocalPlayer.CharacterAdded:Connect(function(char)
+            task.wait(1)
+            if espEnabled then
+                addBox(LocalPlayer)
+            end
+        end)
+    end
+end
+
+local espBtn = createButton("ESP [OFF]", Vector2.new(20, 60), twoContentFrame, function()
+    updateESP(not espEnabled)
+end)
+
+local UIS = game:GetService("UserInputService")
+UIS.InputBegan:Connect(function(input, gp)
+    if gp then return end
+    if input.KeyCode == Enum.KeyCode.RightBracket then
+        mainFrame.Visible = not mainFrame.Visible
+    end
+end)
+
+LocalPlayer.CharacterAdded:Connect(function()
+    task.wait(1)
+    if superSpeedEnabled then setSuperSpeed(true) end
+    if infiniteJumpEnabled then setInfiniteJump(true) end
+    if flyEnabled then
+        flyEnabled = false
+        if flyConn then flyConn:Disconnect(); flyConn = nil end
+        if flyBodyVel then flyBodyVel:Destroy(); flyBodyVel = nil end
+    end
+    if noclipEnabled then setNoclip(true) end
+    if godmodeEnabled then activateGodmode() end
+    if antiFlingEnabled then antiFlingBtn.BackgroundColor3 = Color3.fromRGB(80,255,80) end
+    if espEnabled then updateESP(true) end
+    mainFrame.Visible = true
+end)
